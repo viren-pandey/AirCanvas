@@ -1,0 +1,784 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AirCanvas Pro Admin</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
+
+    :root {
+      --bg: #f4f8fb;
+      --bg-2: #e6f1ff;
+      --ink: #102132;
+      --muted: #557089;
+      --panel: rgba(255, 255, 255, 0.86);
+      --border: rgba(16, 33, 50, 0.14);
+      --stroke: rgba(16, 33, 50, 0.08);
+      --accent: #0b8a77;
+      --accent-2: #ff7e3d;
+      --accent-3: #1861a8;
+      --danger: #c4314b;
+      --shadow: 0 18px 40px rgba(17, 40, 63, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: "Plus Jakarta Sans", "Trebuchet MS", sans-serif;
+      background:
+        radial-gradient(1200px 640px at -15% -10%, rgba(11, 138, 119, 0.22), transparent 58%),
+        radial-gradient(820px 540px at 110% 10%, rgba(255, 126, 61, 0.24), transparent 50%),
+        linear-gradient(160deg, var(--bg-2), var(--bg) 48%, #f7fbff 100%);
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      z-index: -1;
+      border-radius: 999px;
+      filter: blur(18px);
+      opacity: 0.75;
+      pointer-events: none;
+    }
+
+    body::before {
+      width: 360px;
+      height: 360px;
+      top: 24%;
+      left: -110px;
+      background: rgba(24, 97, 168, 0.22);
+      animation: driftA 12s ease-in-out infinite alternate;
+    }
+
+    body::after {
+      width: 290px;
+      height: 290px;
+      right: -60px;
+      bottom: 12%;
+      background: rgba(255, 126, 61, 0.26);
+      animation: driftB 10s ease-in-out infinite alternate;
+    }
+
+    @keyframes driftA {
+      from { transform: translateY(-8px) scale(1); }
+      to { transform: translateY(16px) scale(1.08); }
+    }
+
+    @keyframes driftB {
+      from { transform: translateY(10px) scale(1); }
+      to { transform: translateY(-14px) scale(1.12); }
+    }
+
+    .container {
+      max-width: 1260px;
+      margin: 26px auto 86px auto;
+      padding: 0 18px;
+    }
+
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      margin-bottom: 16px;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: rise 560ms ease forwards;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(1.7rem, 2.8vw, 2.5rem);
+      line-height: 1.05;
+      letter-spacing: 0.2px;
+    }
+
+    .hero p {
+      margin: 8px 0 0 0;
+      color: var(--muted);
+      max-width: 66ch;
+      font-size: 0.98rem;
+    }
+
+    .live-pill {
+      border: 1px solid rgba(11, 138, 119, 0.34);
+      color: #0a5d4f;
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: rgba(11, 138, 119, 0.12);
+      font-weight: 600;
+      font-size: 0.84rem;
+      white-space: nowrap;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    }
+
+    .muted { color: var(--muted); }
+    .danger { color: var(--danger); }
+    .ok { color: #187a52; }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+    }
+
+    .login {
+      margin-bottom: 16px;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: rise 560ms ease 90ms forwards;
+    }
+
+    h2 {
+      margin: 0 0 11px 0;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.15px;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input,
+    button {
+      border-radius: 10px;
+      font-size: 0.94rem;
+      padding: 10px 12px;
+      border: 1px solid var(--stroke);
+      transition: border-color 140ms ease, transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+    }
+
+    input {
+      min-width: 210px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.9);
+      font-family: inherit;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: rgba(24, 97, 168, 0.52);
+      box-shadow: 0 0 0 4px rgba(24, 97, 168, 0.12);
+    }
+
+    button {
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent) 0%, #12a089 100%);
+      color: #f8feff;
+      border-color: rgba(7, 107, 91, 0.44);
+      letter-spacing: 0.2px;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(11, 138, 119, 0.24);
+    }
+
+    button.secondary {
+      background: linear-gradient(145deg, #ffffff, #f2f7fb);
+      border-color: var(--stroke);
+      color: var(--ink);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    }
+
+    button.secondary:hover {
+      box-shadow: 0 10px 16px rgba(17, 40, 63, 0.1);
+    }
+
+    #loginStatus {
+      min-height: 22px;
+      margin: 10px 0 0 0;
+      font-weight: 500;
+    }
+
+    .hidden { display: none !important; }
+
+    #dashboard {
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 280ms ease, transform 280ms ease;
+    }
+
+    #dashboard.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .metric {
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(12px) scale(0.99);
+      animation: rise 540ms ease forwards;
+    }
+
+    .metric:nth-child(1) { animation-delay: 100ms; }
+    .metric:nth-child(2) { animation-delay: 180ms; }
+    .metric:nth-child(3) { animation-delay: 260ms; }
+
+    .metric::after {
+      content: "";
+      position: absolute;
+      width: 170px;
+      height: 170px;
+      right: -70px;
+      top: -72px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(24, 97, 168, 0.28), transparent 64%);
+    }
+
+    .metric-title {
+      color: var(--muted);
+      font-size: 0.84rem;
+      letter-spacing: 0.25px;
+      text-transform: uppercase;
+    }
+
+    .value {
+      position: relative;
+      z-index: 1;
+      margin-top: 4px;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(1.4rem, 2.4vw, 2rem);
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .dash-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1.15fr 1fr;
+      margin-bottom: 12px;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      max-height: 420px;
+      border-radius: 12px;
+      border: 1px solid var(--stroke);
+      background: rgba(255, 255, 255, 0.84);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th,
+    td {
+      text-align: left;
+      border-bottom: 1px solid var(--stroke);
+      padding: 9px 8px;
+      vertical-align: top;
+      white-space: nowrap;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: rgba(243, 248, 252, 0.96);
+      font-size: 0.78rem;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: #3f5870;
+      font-weight: 700;
+    }
+
+    tbody tr:nth-child(even) td {
+      background: rgba(246, 251, 255, 0.82);
+    }
+
+    tbody tr:hover td {
+      background: rgba(237, 246, 255, 0.92);
+    }
+
+    code {
+      display: inline-block;
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: rgba(16, 33, 50, 0.08);
+      color: #25415f;
+      font-size: 0.78rem;
+    }
+
+    .empty {
+      margin: 10px 0 2px 0;
+      color: #6f879e;
+      font-size: 0.9rem;
+      text-align: center;
+      padding: 14px;
+      border: 1px dashed rgba(16, 33, 50, 0.18);
+      border-radius: 10px;
+      background: rgba(250, 253, 255, 0.74);
+    }
+
+    .filters {
+      margin-top: 2px;
+      margin-bottom: 10px;
+    }
+
+    .filters input {
+      min-width: 160px;
+      flex: 1 1 160px;
+    }
+
+    #galleryCount {
+      margin-top: 2px;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      color: #4f6a82;
+      font-weight: 600;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(178px, 1fr));
+      gap: 11px;
+      margin-top: 4px;
+    }
+
+    .thumb {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--stroke);
+      background: #fff;
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    }
+
+    .thumb:hover {
+      transform: translateY(-2px);
+      border-color: rgba(24, 97, 168, 0.35);
+      box-shadow: 0 16px 26px rgba(17, 40, 63, 0.16);
+    }
+
+    .thumb img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      display: block;
+      background: linear-gradient(135deg, #e4edf6, #f6fafe);
+    }
+
+    .thumb-meta {
+      padding: 8px;
+      font-size: 0.75rem;
+      color: #526f87;
+      border-top: 1px solid rgba(16, 33, 50, 0.08);
+      line-height: 1.35;
+    }
+
+    #consentBanner {
+      position: fixed;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(16, 33, 50, 0.16);
+      padding: 12px;
+      background: rgba(9, 22, 33, 0.92);
+      color: #eaf4ff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      z-index: 30;
+      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.24);
+      animation: rise 300ms ease;
+      font-size: 0.9rem;
+    }
+
+    #consentBanner button {
+      background: linear-gradient(135deg, var(--accent-2), #ff9f5f);
+      border-color: rgba(255, 126, 61, 0.44);
+      white-space: nowrap;
+      color: #fff;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 980px) {
+      .dash-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .live-pill {
+        margin-top: 4px;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .container {
+        margin-top: 18px;
+        padding: 0 12px;
+      }
+
+      .panel,
+      .metric {
+        border-radius: 14px;
+      }
+
+      input {
+        min-width: 100%;
+      }
+
+      .row button {
+        flex: 1 1 auto;
+      }
+
+      #consentBanner {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="hero">
+      <div>
+        <h1>Admin Command Center</h1>
+        <p>Monitor user growth, frame activity, and canvas behavior in one operational cockpit for AirCanvas Pro.</p>
+      </div>
+      <div class="live-pill">Live Analytics Feed</div>
+    </header>
+
+    <section class="panel login" id="loginCard">
+      <h2>Admin Login</h2>
+      <div class="row">
+        <input id="email" type="email" placeholder="admin@email.com" autocomplete="username" />
+        <input id="password" type="password" placeholder="password" autocomplete="current-password" />
+        <button id="loginBtn">Login</button>
+        <button class="secondary" id="logoutBtn">Logout</button>
+      </div>
+      <p id="loginStatus" class="muted"></p>
+    </section>
+
+    <section id="dashboard" class="hidden">
+      <div class="cards">
+        <article class="metric">
+          <div class="metric-title">Total Users</div>
+          <div class="value" id="totalUsers">0</div>
+        </article>
+        <article class="metric">
+          <div class="metric-title">Total Drawings</div>
+          <div class="value" id="totalDrawings">0</div>
+        </article>
+        <article class="metric">
+          <div class="metric-title">Avg Session Duration</div>
+          <div class="value" id="avgSession">0s</div>
+        </article>
+      </div>
+
+      <div class="dash-grid">
+        <article class="panel">
+          <h2>Frames Per User</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>User ID</th>
+                  <th>Frames</th>
+                </tr>
+              </thead>
+              <tbody id="framesPerUser"></tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="panel">
+          <h2>Recent Activity</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>User</th>
+                  <th>Brush</th>
+                  <th>Shape</th>
+                </tr>
+              </thead>
+              <tbody id="recentActivity"></tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+
+      <article class="panel">
+        <h2>Frame Gallery</h2>
+        <div class="row filters">
+          <input id="filterUserId" type="text" placeholder="Filter by user_id" />
+          <input id="filterBrush" type="text" placeholder="brush_mode" />
+          <input id="filterShape" type="text" placeholder="shape_mode" />
+          <button id="applyFilters">Apply</button>
+        </div>
+        <div id="galleryCount" class="muted"></div>
+        <div class="gallery" id="gallery"></div>
+      </article>
+    </section>
+  </div>
+
+  <div id="consentBanner" class="hidden">
+    <span>This admin view stores session/privacy consent in local storage to keep analytics access stable.</span>
+    <button id="acceptConsent">I Consent</button>
+  </div>
+
+  <script>
+    const apiPrefix = "{{ api_prefix }}";
+    const tokenKey = "aircanvas_admin_token";
+    const consentKey = "aircanvas_privacy_consent";
+
+    const loginStatus = document.getElementById("loginStatus");
+    const dashboard = document.getElementById("dashboard");
+    const consentBanner = document.getElementById("consentBanner");
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function setStatus(message, kind = "muted") {
+      loginStatus.textContent = message;
+      loginStatus.className = kind;
+    }
+
+    async function parseError(response) {
+      try {
+        const payload = await response.json();
+        if (typeof payload?.detail === "string") {
+          return payload.detail;
+        }
+      } catch (_) {
+      }
+      const text = await response.text();
+      return text || `Request failed: ${response.status}`;
+    }
+
+    async function apiFetch(path, options = {}) {
+      const token = localStorage.getItem(tokenKey);
+      const headers = {
+        "Content-Type": "application/json",
+        ...(options.headers || {}),
+      };
+
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`${apiPrefix}${path}`, { ...options, headers });
+      if (!response.ok) {
+        throw new Error(await parseError(response));
+      }
+      return response.json();
+    }
+
+    async function login() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      if (!email || !password) {
+        setStatus("Enter both email and password.", "danger");
+        return;
+      }
+
+      try {
+        const payload = await apiFetch("/auth/login", {
+          method: "POST",
+          body: JSON.stringify({ email, password }),
+        });
+        if (!payload?.user?.is_admin) {
+          localStorage.removeItem(tokenKey);
+          setStatus("This account is not admin-enabled.", "danger");
+          return;
+        }
+        localStorage.setItem(tokenKey, payload.access_token);
+        setStatus(`Logged in as ${payload.user.email}`, "ok");
+        await loadDashboard();
+      } catch (err) {
+        setStatus(`Login failed: ${err.message || "Check credentials/admin role."}`, "danger");
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem(tokenKey);
+      dashboard.classList.add("hidden");
+      dashboard.classList.remove("show");
+      document.getElementById("filterUserId").value = "";
+      document.getElementById("filterBrush").value = "";
+      document.getElementById("filterShape").value = "";
+      document.getElementById("framesPerUser").innerHTML = "";
+      document.getElementById("recentActivity").innerHTML = "";
+      document.getElementById("gallery").innerHTML = "";
+      document.getElementById("galleryCount").textContent = "";
+      setStatus("Logged out.", "muted");
+    }
+
+    function renderFramesPerUser(items) {
+      const tbody = document.getElementById("framesPerUser");
+      if (!items.length) {
+        tbody.innerHTML = `<tr><td colspan="3"><div class="empty">No users found yet.</div></td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = items.map((item) => `
+        <tr>
+          <td>${escapeHtml(item.name)}</td>
+          <td><code title="${escapeHtml(item.user_id)}">${escapeHtml(item.user_id)}</code></td>
+          <td>${Number(item.frames) || 0}</td>
+        </tr>
+      `).join("");
+    }
+
+    function renderRecentActivity(items) {
+      const tbody = document.getElementById("recentActivity");
+      if (!items.length) {
+        tbody.innerHTML = `<tr><td colspan="4"><div class="empty">No recent frame events.</div></td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = items.map((item) => `
+        <tr>
+          <td>${new Date(item.created_at).toLocaleString()}</td>
+          <td>${escapeHtml(item.user_name)}</td>
+          <td>${escapeHtml(item.brush_mode || "-")}</td>
+          <td>${escapeHtml(item.shape_mode || "-")}</td>
+        </tr>
+      `).join("");
+    }
+
+    function renderGallery(page) {
+      const gallery = document.getElementById("gallery");
+      document.getElementById("galleryCount").textContent = `Showing ${page.items.length} of ${page.total}`;
+
+      if (!page.items.length) {
+        gallery.innerHTML = `<div class="empty" style="grid-column: 1 / -1;">No frames match current filters.</div>`;
+        return;
+      }
+
+      gallery.innerHTML = page.items.map((frame) => {
+        const frameUrl = escapeHtml(frame.frame_url);
+        const thumbUrl = escapeHtml(frame.thumbnail_url || frame.frame_url);
+        return `
+          <div class="thumb">
+            <a href="${frameUrl}" target="_blank" rel="noreferrer">
+              <img src="${thumbUrl}" alt="frame ${escapeHtml(frame.id)}" loading="lazy" />
+            </a>
+            <div class="thumb-meta">
+              <div>${new Date(frame.created_at).toLocaleString()}</div>
+              <div>${escapeHtml(frame.brush_mode || "-")}</div>
+              <div>${escapeHtml(frame.shape_mode || "-")}</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function loadDashboard() {
+      const [metrics, activity] = await Promise.all([
+        apiFetch("/admin/metrics"),
+        apiFetch("/admin/recent-activity?limit=20"),
+      ]);
+
+      document.getElementById("totalUsers").textContent = Number(metrics.total_users || 0).toLocaleString();
+      document.getElementById("totalDrawings").textContent = Number(metrics.total_drawings || 0).toLocaleString();
+      document.getElementById("avgSession").textContent = `${Math.round(metrics.average_session_duration_seconds || 0)}s`;
+
+      renderFramesPerUser(metrics.frames_per_user || []);
+      renderRecentActivity(activity.items || []);
+      await loadGallery();
+
+      dashboard.classList.remove("hidden");
+      dashboard.classList.add("show");
+    }
+
+    async function loadGallery() {
+      const userId = document.getElementById("filterUserId").value.trim();
+      const brush = document.getElementById("filterBrush").value.trim();
+      const shape = document.getElementById("filterShape").value.trim();
+
+      const query = new URLSearchParams({ limit: "48", offset: "0" });
+      if (userId) query.set("user_id", userId);
+      if (brush) query.set("brush_mode", brush);
+      if (shape) query.set("shape_mode", shape);
+
+      const page = await apiFetch(`/admin/gallery?${query.toString()}`);
+      renderGallery(page);
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", login);
+    document.getElementById("logoutBtn").addEventListener("click", logout);
+    document.getElementById("applyFilters").addEventListener("click", loadGallery);
+    document.getElementById("email").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        login();
+      }
+    });
+    document.getElementById("password").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        login();
+      }
+    });
+
+    if (!localStorage.getItem(consentKey)) {
+      consentBanner.classList.remove("hidden");
+    }
+
+    document.getElementById("acceptConsent").addEventListener("click", () => {
+      localStorage.setItem(consentKey, "accepted");
+      consentBanner.classList.add("hidden");
+    });
+
+    if (localStorage.getItem(tokenKey)) {
+      loadDashboard().catch(() => {
+        localStorage.removeItem(tokenKey);
+        setStatus("Saved token expired. Log in again.", "muted");
+      });
+    }
+  </script>
+</body>
+</html>

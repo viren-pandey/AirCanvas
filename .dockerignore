@@ -1,0 +1,15 @@
+.git
+.gitignore
+.venv
+**/__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+
+# Desktop runtime artifacts
+saves
+slides
+
+# Non-backend app
+hello-fly

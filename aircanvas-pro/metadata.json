@@ -1,0 +1,8 @@
+{
+  "name": "AirCanvas Pro",
+  "description": "Next-generation gesture-controlled drawing application with immersive UI.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

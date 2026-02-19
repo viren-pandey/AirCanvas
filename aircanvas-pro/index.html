@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AirCanvas Pro</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-sans: 'Inter', sans-serif;
+      --font-display: 'Manrope', sans-serif;
+      --bg-deep: #030304;
+      --bg-surface: #0A0A0C;
+      --accent-primary: #FFFFFF;
+      --accent-subtle: #2563EB;
+      --text-main: #F4F4F5;
+      --text-muted: #71717A;
+      --border-light: rgba(255, 255, 255, 0.06);
+    }
+    
+    body {
+      background-color: var(--bg-deep);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Cinematic Motion Curves */
+    .ease-cinema {
+      transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    
+    .ease-out-expo {
+      transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Animations */
+    @keyframes revealUp {
+      from { opacity: 0; transform: translateY(40px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .reveal-up {
+      animation: revealUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes grain {
+      0%, 100% { transform: translate(0, 0); }
+      10% { transform: translate(-5%, -10%); }
+      20% { transform: translate(-15%, 5%); }
+      30% { transform: translate(7%, -25%); }
+      40% { transform: translate(-5%, 25%); }
+      50% { transform: translate(-15%, 10%); }
+      60% { transform: translate(15%, 0%); }
+      70% { transform: translate(0%, 15%); }
+      80% { transform: translate(3%, 35%); }
+      90% { transform: translate(-10%, 10%); }
+    }
+    
+    .bg-noise {
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+      animation: grain 8s steps(10) infinite;
+    }
+
+    /* Utilities */
+    .border-subtle {
+      border: 1px solid var(--border-light);
+    }
+    
+    .text-balance {
+      text-wrap: balance;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-deep); 
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #333; 
+      border-radius: 3px;
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "rxjs": "https://esm.sh/rxjs@^7.8.2?conditions=es2015",
+    "rxjs/operators": "https://esm.sh/rxjs@^7.8.2/operators?conditions=es2015",
+    "rxjs/ajax": "https://esm.sh/rxjs@^7.8.2/ajax?conditions=es2015",
+    "rxjs/webSocket": "https://esm.sh/rxjs@^7.8.2/webSocket?conditions=es2015",
+    "rxjs/testing": "https://esm.sh/rxjs@^7.8.2/testing?conditions=es2015",
+    "rxjs/fetch": "https://esm.sh/rxjs@^7.8.2/fetch?conditions=es2015",
+    "@angular/core": "https://esm.sh/@angular/core@^21.1.5?external=rxjs",
+    "@angular/platform-browser": "https://esm.sh/@angular/platform-browser@^21.1.5?external=rxjs",
+    "@angular/common": "https://esm.sh/@angular/common@^21.1.5?external=rxjs",
+    "@angular/forms": "https://esm.sh/@angular/forms@^21.1.5?external=rxjs",
+    "@angular/compiler": "https://esm.sh/@angular/compiler@^21.1.5?external=rxjs",
+    "@angular/router": "https://esm.sh/@angular/router@^21.1.5?external=rxjs",
+    "@angular/common/http": "https://esm.sh/@angular/common@^21.1.5/http?external=rxjs"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+  <div class="bg-noise"></div>
+  <app-root></app-root>
+</body>
+</html>

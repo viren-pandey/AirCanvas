@@ -1,0 +1,967 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AirCanvas User Dashboard</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;500;600;700&display=swap");
+
+    :root {
+      --bg: #f3f8ff;
+      --bg-soft: #e9f3ff;
+      --ink: #13253a;
+      --muted: #54708b;
+      --panel: rgba(255, 255, 255, 0.9);
+      --line: rgba(19, 37, 58, 0.14);
+      --line-soft: rgba(19, 37, 58, 0.08);
+      --primary: #0f8a74;
+      --primary-strong: #0b6454;
+      --secondary: #ef7c3a;
+      --accent: #1a64ac;
+      --danger: #c63f4c;
+      --ok: #178152;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --shadow: 0 18px 38px rgba(19, 37, 58, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      min-height: 100vh;
+      font-family: "Manrope", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(900px 460px at 110% -14%, rgba(15, 138, 116, 0.22), transparent 58%),
+        radial-gradient(920px 460px at -12% -6%, rgba(239, 124, 58, 0.18), transparent 60%),
+        linear-gradient(160deg, var(--bg-soft), var(--bg) 58%, #f8fbff 100%);
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      z-index: -1;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(18px);
+      opacity: 0.72;
+    }
+
+    body::before {
+      width: 320px;
+      height: 320px;
+      left: -120px;
+      top: 28%;
+      background: rgba(26, 100, 172, 0.24);
+      animation: driftA 12s ease-in-out infinite alternate;
+    }
+
+    body::after {
+      width: 260px;
+      height: 260px;
+      right: -70px;
+      bottom: 8%;
+      background: rgba(239, 124, 58, 0.26);
+      animation: driftB 10s ease-in-out infinite alternate;
+    }
+
+    @keyframes driftA {
+      from { transform: translateY(-10px) scale(1); }
+      to { transform: translateY(12px) scale(1.08); }
+    }
+
+    @keyframes driftB {
+      from { transform: translateY(10px) scale(1); }
+      to { transform: translateY(-10px) scale(1.1); }
+    }
+
+    .shell {
+      max-width: 1240px;
+      margin: 22px auto 70px auto;
+      padding: 0 16px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(125deg, #0f3342 0%, #1f5262 48%, #2f7d78 100%);
+      color: #ecfbfa;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      margin-bottom: 14px;
+      opacity: 0;
+      transform: translateY(14px);
+      animation: rise 520ms ease forwards;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      right: -90px;
+      top: -100px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(255, 255, 255, 0.22), transparent 66%);
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-family: "Space Grotesk", sans-serif;
+      letter-spacing: 0.2px;
+    }
+
+    h1 {
+      font-size: clamp(1.7rem, 3vw, 2.45rem);
+      line-height: 1.05;
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .hero p {
+      color: #d8efef;
+      max-width: 75ch;
+    }
+
+    .hero-grid {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+    }
+
+    .hero-item {
+      background: rgba(10, 26, 33, 0.28);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 12px;
+      padding: 11px 12px;
+      backdrop-filter: blur(4px);
+    }
+
+    .hero-item strong {
+      display: block;
+      margin-bottom: 5px;
+      color: #f6ffff;
+      font-size: 0.93rem;
+    }
+
+    .hero-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 4px;
+      padding: 8px 10px;
+      border-radius: 9px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      color: #ecfbfa;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 700;
+      background: rgba(9, 28, 36, 0.38);
+    }
+
+    .mono {
+      font-family: "Consolas", "Cascadia Code", monospace;
+      font-size: 0.75rem;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: #d8efef;
+      line-height: 1.4;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      backdrop-filter: blur(10px);
+    }
+
+    .subtle {
+      color: var(--muted);
+    }
+
+    .auth {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 14px;
+      opacity: 0;
+      transform: translateY(14px);
+      animation: rise 520ms ease 80ms forwards;
+    }
+
+    .tabs {
+      display: inline-flex;
+      gap: 8px;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-weight: 700;
+      font-family: "Space Grotesk", sans-serif;
+      transition: border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+    }
+
+    .tab-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(19, 37, 58, 0.1);
+    }
+
+    .tab-btn.active {
+      border-color: rgba(15, 138, 116, 0.5);
+      background: rgba(15, 138, 116, 0.1);
+      color: var(--primary-strong);
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    input,
+    button {
+      font: inherit;
+      border: 1px solid var(--line-soft);
+      border-radius: 11px;
+      padding: 9px 11px;
+      transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease, background-color 140ms ease;
+    }
+
+    input {
+      min-width: 210px;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--ink);
+    }
+
+    input:focus {
+      outline: none;
+      border-color: rgba(26, 100, 172, 0.5);
+      box-shadow: 0 0 0 4px rgba(26, 100, 172, 0.12);
+    }
+
+    button {
+      cursor: pointer;
+      border-color: rgba(10, 107, 90, 0.36);
+      background: linear-gradient(135deg, var(--primary) 0%, #12a78d 100%);
+      color: #fff;
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 22px rgba(15, 138, 116, 0.24);
+      background: linear-gradient(135deg, #0e7a67 0%, #10957f 100%);
+    }
+
+    .ghost {
+      background: linear-gradient(145deg, #ffffff, #eff5fb);
+      border-color: var(--line-soft);
+      color: var(--ink);
+    }
+
+    .ghost:hover {
+      box-shadow: 0 10px 16px rgba(19, 37, 58, 0.1);
+      background: linear-gradient(145deg, #fcfdff, #e8f1fa);
+    }
+
+    .status {
+      min-height: 21px;
+      font-size: 0.93rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .status.error {
+      color: var(--danger);
+    }
+
+    .status.ok {
+      color: var(--ok);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .dashboard {
+      display: grid;
+      gap: 13px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 280ms ease, transform 280ms ease;
+    }
+
+    .dashboard.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .welcome {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      align-items: start;
+    }
+
+    .top-links {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 11px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: #fff;
+      color: #38556f;
+      text-decoration: none;
+    }
+
+    .chip.admin {
+      border-color: rgba(239, 124, 58, 0.45);
+      background: rgba(239, 124, 58, 0.1);
+      color: #9f4c15;
+    }
+
+    .chip.link {
+      border-color: rgba(26, 100, 172, 0.4);
+      background: rgba(26, 100, 172, 0.1);
+      color: #1f588f;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .metrics {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+    }
+
+    .metric {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 13px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 10px 22px rgba(19, 37, 58, 0.1);
+      opacity: 0;
+      transform: translateY(10px);
+      animation: rise 480ms ease forwards;
+    }
+
+    .metric:nth-child(1) { animation-delay: 130ms; }
+    .metric:nth-child(2) { animation-delay: 190ms; }
+    .metric:nth-child(3) { animation-delay: 250ms; }
+    .metric:nth-child(4) { animation-delay: 310ms; }
+
+    .metric::after {
+      content: "";
+      position: absolute;
+      right: -52px;
+      top: -58px;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(26, 100, 172, 0.24), transparent 66%);
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.65px;
+      font-weight: 700;
+    }
+
+    .metric .value {
+      margin-top: 6px;
+      font-size: clamp(1.15rem, 2vw, 1.75rem);
+      line-height: 1.15;
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 700;
+      position: relative;
+      z-index: 1;
+      word-break: break-word;
+    }
+
+    .meta {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr;
+    }
+
+    .gallery-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 9px;
+    }
+
+    .gallery-controls input {
+      flex: 1 1 160px;
+      min-width: 150px;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+      gap: 10px;
+    }
+
+    .frame {
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius-md);
+      background: #fff;
+      overflow: hidden;
+      transition: transform 170ms ease, box-shadow 170ms ease, border-color 170ms ease;
+    }
+
+    .frame:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 24px rgba(19, 37, 58, 0.15);
+      border-color: rgba(26, 100, 172, 0.34);
+    }
+
+    .frame a {
+      display: block;
+      line-height: 0;
+    }
+
+    .frame img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      display: block;
+      background: linear-gradient(140deg, #edf3f9, #f8fbff);
+    }
+
+    .frame-meta {
+      padding: 8px;
+      font-size: 0.76rem;
+      color: var(--muted);
+      border-top: 1px solid var(--line-soft);
+      line-height: 1.4;
+    }
+
+    .frame-meta strong {
+      color: #304d67;
+      display: block;
+      margin-bottom: 2px;
+      font-size: 0.8rem;
+    }
+
+    .empty {
+      border: 1px dashed rgba(19, 37, 58, 0.2);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      color: #607a93;
+      background: rgba(249, 252, 255, 0.85);
+      grid-column: 1 / -1;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 880px) {
+      .welcome {
+        align-items: stretch;
+      }
+
+      .action-buttons {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        margin-top: 16px;
+        padding: 0 12px;
+      }
+
+      .hero,
+      .panel {
+        border-radius: 14px;
+      }
+
+      input {
+        min-width: 100%;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .action-buttons {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <h1>AirCanvas User Mission Control</h1>
+      <p>Manage your account, track saved drawings, and copy your runtime token from one clean control surface.</p>
+      <div class="hero-grid">
+        <div class="hero-item">
+          <strong>Backend API Base URL</strong>
+          <div id="apiBaseUrl" class="mono"></div>
+        </div>
+        <div class="hero-item">
+          <strong>Desktop App Connection</strong>
+          <div id="envHint" class="mono"></div>
+        </div>
+        <div class="hero-item">
+          <strong>AirCanvas Pro Web App</strong>
+          <a id="aircanvasProLink" class="hero-link" href="http://localhost:3000" target="_blank" rel="noreferrer">Open AirCanvas Pro</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="authPanel" class="panel auth">
+      <div>
+        <h2>Account Access</h2>
+        <p class="subtle">Login or register to load your frame gallery and sync your desktop app token.</p>
+      </div>
+
+      <div class="tabs">
+        <button type="button" class="tab-btn active" id="tabLogin">Login</button>
+        <button type="button" class="tab-btn" id="tabRegister">Register</button>
+      </div>
+
+      <div id="loginForm">
+        <div class="row">
+          <input id="loginEmail" type="email" placeholder="you@example.com" autocomplete="username" />
+          <input id="loginPassword" type="password" placeholder="password (min 8 chars)" autocomplete="current-password" />
+          <button type="button" id="loginBtn">Login</button>
+        </div>
+      </div>
+
+      <div id="registerForm" class="hidden">
+        <div class="row">
+          <input id="registerName" type="text" placeholder="your name" autocomplete="name" />
+          <input id="registerEmail" type="email" placeholder="you@example.com" autocomplete="email" />
+          <input id="registerPassword" type="password" placeholder="password (min 8 chars)" autocomplete="new-password" />
+          <button type="button" id="registerBtn">Create Account</button>
+        </div>
+      </div>
+
+      <div id="status" class="status"></div>
+    </section>
+
+    <section id="dashboard" class="dashboard hidden">
+      <div class="panel">
+        <div class="welcome">
+          <div>
+            <h2 style="margin-bottom: 4px;">Welcome, <span id="profileName"></span></h2>
+            <p class="subtle">Email: <span id="profileEmail"></span></p>
+            <div class="top-links">
+              <span id="adminChip" class="chip admin hidden">Admin account</span>
+              <a id="adminLink" href="/admin" class="chip link hidden">Open Admin Dashboard</a>
+            </div>
+          </div>
+          <div class="action-buttons">
+            <button type="button" class="ghost" id="refreshBtn">Refresh</button>
+            <button type="button" class="ghost" id="copyTokenBtn">Copy JWT</button>
+            <button type="button" class="ghost" id="logoutBtn">Logout</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="metrics">
+        <article class="metric">
+          <div class="label">Total Drawings</div>
+          <div class="value" id="metricTotal">0</div>
+        </article>
+        <article class="metric">
+          <div class="label">Last Saved</div>
+          <div class="value" id="metricLast">-</div>
+        </article>
+        <article class="metric">
+          <div class="label">Top Brush</div>
+          <div class="value" id="metricBrush">-</div>
+        </article>
+        <article class="metric">
+          <div class="label">Top Shape</div>
+          <div class="value" id="metricShape">-</div>
+        </article>
+      </div>
+
+      <div class="meta">
+        <div class="panel">
+          <h2>My Frame Gallery</h2>
+          <div class="gallery-controls">
+            <input id="filterBrush" type="text" placeholder="Filter brush mode" />
+            <input id="filterShape" type="text" placeholder="Filter shape mode" />
+            <input id="filterDate" type="date" />
+            <button type="button" id="applyFiltersBtn">Apply Filters</button>
+            <button type="button" class="ghost" id="resetFiltersBtn">Reset</button>
+          </div>
+          <p id="galleryInfo" class="subtle" style="margin-bottom: 10px;">Showing 0 frames</p>
+          <div id="gallery" class="gallery"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const apiPrefix = "{{ api_prefix }}";
+    const appName = "{{ app_name }}";
+    const tokenKey = "aircanvas_user_token";
+
+    const authPanel = document.getElementById("authPanel");
+    const dashboard = document.getElementById("dashboard");
+    const statusEl = document.getElementById("status");
+    const galleryEl = document.getElementById("gallery");
+    const galleryInfoEl = document.getElementById("galleryInfo");
+    const adminLinkEl = document.getElementById("adminLink");
+    const adminChipEl = document.getElementById("adminChip");
+    const apiBaseUrlEl = document.getElementById("apiBaseUrl");
+    const envHintEl = document.getElementById("envHint");
+    const aircanvasProLinkEl = document.getElementById("aircanvasProLink");
+
+    let allFrames = [];
+
+    function escapeHtml(value) {
+      const text = String(value ?? "");
+      return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function setStatus(message, tone = "muted") {
+      statusEl.textContent = message;
+      statusEl.className = "status";
+      if (tone === "error") statusEl.classList.add("error");
+      if (tone === "ok") statusEl.classList.add("ok");
+    }
+
+    function setConnectionInfo() {
+      const apiBaseUrl = window.location.origin;
+      apiBaseUrlEl.textContent = apiBaseUrl;
+      envHintEl.textContent = `API_BASE_URL=${apiBaseUrl}\nAIRCANVAS_JWT_TOKEN=<paste token from dashboard>`;
+      try {
+        const url = new URL(window.location.origin);
+        const localHost = ["localhost", "127.0.0.1", "::1"].includes(url.hostname);
+        if (localHost) {
+          aircanvasProLinkEl.href = "http://localhost:3000";
+        } else {
+          aircanvasProLinkEl.href = `${window.location.origin}/#/`;
+        }
+      } catch (_) {
+        aircanvasProLinkEl.href = "http://localhost:3000";
+      }
+    }
+
+    async function parseError(response) {
+      try {
+        const payload = await response.json();
+        if (typeof payload?.detail === "string") return payload.detail;
+      } catch (_) {
+      }
+      const text = await response.text();
+      return text || `Request failed (${response.status})`;
+    }
+
+    async function apiFetch(path, options = {}) {
+      const token = localStorage.getItem(tokenKey);
+      const headers = {
+        ...(options.headers || {}),
+      };
+
+      if (!Object.prototype.hasOwnProperty.call(headers, "Content-Type")) {
+        headers["Content-Type"] = "application/json";
+      }
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`${apiPrefix}${path}`, { ...options, headers });
+      if (!response.ok) {
+        throw new Error(await parseError(response));
+      }
+      return response.json();
+    }
+
+    function setAuthTab(mode) {
+      const loginTab = document.getElementById("tabLogin");
+      const registerTab = document.getElementById("tabRegister");
+      const loginForm = document.getElementById("loginForm");
+      const registerForm = document.getElementById("registerForm");
+
+      if (mode === "register") {
+        registerTab.classList.add("active");
+        loginTab.classList.remove("active");
+        registerForm.classList.remove("hidden");
+        loginForm.classList.add("hidden");
+      } else {
+        loginTab.classList.add("active");
+        registerTab.classList.remove("active");
+        loginForm.classList.remove("hidden");
+        registerForm.classList.add("hidden");
+      }
+    }
+
+    function summarizeTop(items, selector) {
+      const counts = new Map();
+      for (const item of items) {
+        const key = String(selector(item) || "-").trim() || "-";
+        counts.set(key, (counts.get(key) || 0) + 1);
+      }
+      let top = "-";
+      let max = 0;
+      for (const [key, count] of counts.entries()) {
+        if (count > max) {
+          max = count;
+          top = key;
+        }
+      }
+      return top;
+    }
+
+    function formatShortDate(value) {
+      if (!value) return "-";
+      const parsed = new Date(value);
+      if (Number.isNaN(parsed.getTime())) return "-";
+      return parsed.toLocaleString();
+    }
+
+    function renderMetrics(items, total) {
+      document.getElementById("metricTotal").textContent = String(total);
+      document.getElementById("metricLast").textContent = items.length ? formatShortDate(items[0].created_at) : "-";
+      document.getElementById("metricBrush").textContent = summarizeTop(items, (item) => item.brush_mode);
+      document.getElementById("metricShape").textContent = summarizeTop(items, (item) => item.shape_mode);
+    }
+
+    function renderGallery(items) {
+      galleryInfoEl.textContent = `Showing ${items.length} frame${items.length === 1 ? "" : "s"}`;
+
+      if (!items.length) {
+        galleryEl.innerHTML = '<div class="empty">No saved frames yet. Save drawings from the desktop app and refresh.</div>';
+        return;
+      }
+
+      galleryEl.innerHTML = items.map((frame) => {
+        const preview = escapeHtml(frame.thumbnail_url || frame.frame_url || "");
+        const full = escapeHtml(frame.frame_url || "");
+        const brush = escapeHtml(frame.brush_mode || "-");
+        const shape = escapeHtml(frame.shape_mode || "-");
+        const when = escapeHtml(formatShortDate(frame.created_at));
+        const id = escapeHtml(frame.id);
+
+        return `
+          <article class="frame">
+            <a href="${full}" target="_blank" rel="noreferrer">
+              <img src="${preview}" alt="Saved frame ${id}" loading="lazy" />
+            </a>
+            <div class="frame-meta">
+              <strong>${when}</strong>
+              <div>Brush: ${brush}</div>
+              <div>Shape: ${shape}</div>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function applyFilters() {
+      const brush = document.getElementById("filterBrush").value.trim().toLowerCase();
+      const shape = document.getElementById("filterShape").value.trim().toLowerCase();
+      const after = document.getElementById("filterDate").value;
+      const afterTs = after ? new Date(`${after}T00:00:00`).getTime() : null;
+
+      const filtered = allFrames.filter((item) => {
+        const brushMode = String(item.brush_mode || "").toLowerCase();
+        const shapeMode = String(item.shape_mode || "").toLowerCase();
+        const createdTs = new Date(item.created_at).getTime();
+
+        if (brush && !brushMode.includes(brush)) return false;
+        if (shape && !shapeMode.includes(shape)) return false;
+        if (afterTs && (!createdTs || createdTs < afterTs)) return false;
+        return true;
+      });
+
+      renderGallery(filtered);
+    }
+
+    function resetFilters() {
+      document.getElementById("filterBrush").value = "";
+      document.getElementById("filterShape").value = "";
+      document.getElementById("filterDate").value = "";
+      renderGallery(allFrames);
+    }
+
+    async function loadDashboard() {
+      const [me, framesPage] = await Promise.all([
+        apiFetch("/auth/me"),
+        apiFetch("/frames?limit=150&offset=0"),
+      ]);
+
+      allFrames = Array.isArray(framesPage?.items) ? framesPage.items : [];
+
+      document.getElementById("profileName").textContent = me.name;
+      document.getElementById("profileEmail").textContent = me.email;
+      if (me.is_admin) {
+        adminChipEl.classList.remove("hidden");
+        adminLinkEl.classList.remove("hidden");
+      } else {
+        adminChipEl.classList.add("hidden");
+        adminLinkEl.classList.add("hidden");
+      }
+
+      renderMetrics(allFrames, Number(framesPage?.total ?? allFrames.length));
+      renderGallery(allFrames);
+
+      dashboard.classList.remove("hidden");
+      dashboard.classList.add("show");
+      authPanel.classList.add("hidden");
+      setStatus(`Connected to ${appName}.`, "ok");
+    }
+
+    async function login() {
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      if (!email || !password) {
+        setStatus("Enter email and password.", "error");
+        return;
+      }
+
+      try {
+        const payload = await apiFetch("/auth/login", {
+          method: "POST",
+          body: JSON.stringify({ email, password }),
+        });
+        localStorage.setItem(tokenKey, payload.access_token);
+        await loadDashboard();
+      } catch (err) {
+        setStatus(`Login failed: ${err.message}`, "error");
+      }
+    }
+
+    async function register() {
+      const name = document.getElementById("registerName").value.trim();
+      const email = document.getElementById("registerEmail").value.trim();
+      const password = document.getElementById("registerPassword").value;
+
+      if (!name || !email || !password) {
+        setStatus("Enter name, email, and password.", "error");
+        return;
+      }
+
+      try {
+        const payload = await apiFetch("/auth/register", {
+          method: "POST",
+          body: JSON.stringify({
+            name,
+            email,
+            password,
+          }),
+        });
+        localStorage.setItem(tokenKey, payload.access_token);
+        await loadDashboard();
+      } catch (err) {
+        setStatus(`Register failed: ${err.message}`, "error");
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem(tokenKey);
+      allFrames = [];
+      dashboard.classList.add("hidden");
+      dashboard.classList.remove("show");
+      authPanel.classList.remove("hidden");
+      setAuthTab("login");
+      setStatus("Logged out.");
+    }
+
+    async function copyToken() {
+      const token = localStorage.getItem(tokenKey) || "";
+      if (!token) {
+        setStatus("No token available. Login first.", "error");
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(token);
+        setStatus("JWT copied. Paste it into AIRCANVAS_JWT_TOKEN.", "ok");
+      } catch (_) {
+        setStatus("Clipboard access failed. Copy manually from browser storage.", "error");
+      }
+    }
+
+    document.getElementById("tabLogin").addEventListener("click", () => setAuthTab("login"));
+    document.getElementById("tabRegister").addEventListener("click", () => setAuthTab("register"));
+    document.getElementById("loginBtn").addEventListener("click", login);
+    document.getElementById("registerBtn").addEventListener("click", register);
+    document.getElementById("logoutBtn").addEventListener("click", logout);
+    document.getElementById("refreshBtn").addEventListener("click", () => {
+      loadDashboard().catch((err) => setStatus(`Refresh failed: ${err.message}`, "error"));
+    });
+    document.getElementById("copyTokenBtn").addEventListener("click", copyToken);
+    document.getElementById("applyFiltersBtn").addEventListener("click", applyFilters);
+    document.getElementById("resetFiltersBtn").addEventListener("click", resetFilters);
+    document.getElementById("loginPassword").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") login();
+    });
+    document.getElementById("registerPassword").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") register();
+    });
+
+    setConnectionInfo();
+    setAuthTab("login");
+
+    if (localStorage.getItem(tokenKey)) {
+      loadDashboard().catch((err) => {
+        localStorage.removeItem(tokenKey);
+        setStatus(`Session expired: ${err.message}`);
+      });
+    }
+  </script>
+</body>
+</html>
